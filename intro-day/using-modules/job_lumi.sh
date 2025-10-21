@@ -10,4 +10,4 @@
 #SBATCH --gpus-per-node=1
 
 
-srun rocprof --hip-trace poisson
+srun rocprof --hip-trace poisson.x
