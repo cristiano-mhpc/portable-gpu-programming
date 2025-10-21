@@ -13,14 +13,14 @@ The slides are available [here](https://csc-training.github.io/portable-gpu-prog
 
 | Time         | Topic |
 | ----         | ----- |
-| 09:15-09:30  | Welcome
-| 09:15-09:50  | Parallel Computing & GPUs
-| 09:50-10:00  | GPU execution model
+| 09:00-09:15  | Welcome
+| 09:15-09:45  | Parallel Computing & GPUs
+| 09:50-10:00  | Intro & GPU execution model
 | 10:00-10:20  | GPU memory hierarchy
-| 10:40-11:30  | Mahti and LUMI  Computing Platforms
+| 10:40-12:00  | Mahti and LUMI  Computing Platforms & Profiling
 | 12:00-13:00  | Lunch break
-| 13:00-15:00  | Refresher of C++
-| 15:00-16:30  | MPI basics
+| 13:00-14:10  | Refresher of C++
+| 14:30-16:30  | MPI basics
 | 16:30-16:45  | Day 1 wrap-up
 
 ### Day 2, Wednesday 22.10
