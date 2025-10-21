@@ -1,3 +1,4 @@
+//compile on LUMI: CC -o hello hello.cpp
 #include <cstdio>
 #include <vector>
 #include <mpi.h>
