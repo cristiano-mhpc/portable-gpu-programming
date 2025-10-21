@@ -6,7 +6,7 @@
 #SBATCH --partition=debug
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=8
+#SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=1
 
-srun ./hello.x
+srun ./exchange.x

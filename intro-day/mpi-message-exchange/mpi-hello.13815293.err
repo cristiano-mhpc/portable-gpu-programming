@@ -1,0 +1,4 @@
+slurmstepd: error: execve(): /pfs/lustrep3/scratch/project_462001074/christica/Helsinki_GPU_course/portable-gpu-programming/intro-day/mpi-message-exchange/./exchange.x: No such file or directory
+slurmstepd: error: execve(): /pfs/lustrep3/scratch/project_462001074/christica/Helsinki_GPU_course/portable-gpu-programming/intro-day/mpi-message-exchange/./exchange.x: No such file or directory
+srun: error: nid002276: tasks 0-1: Exited with exit code 2
+srun: Terminating StepId=13815293.0
