@@ -11,3 +11,98 @@ core
 *.json
 *.stats.csv
 *.sysinfo.txt
+
+# =========================================
+#  GENERAL SYSTEM / EDITOR FILES
+# =========================================
+*.swp
+*.swo
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.bak
+*.orig
+*.rej
+
+# =========================================
+#  BUILD SYSTEMS
+# =========================================
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+Testing/
+CTestTestfile.cmake
+
+# Autotools
+aclocal.m4
+autom4te.cache/
+config.log
+config.status
+libtool
+ltmain.sh
+m4/
+Makefile.in
+depcomp
+missing
+install-sh
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Meson
+builddir/
+meson-private/
+meson-info/
+
+# =========================================
+#  COMPILATION OUTPUTS
+# =========================================
+# Object / module / binary files
+*.o
+*.obj
+*.lo
+*.mod
+*.smod
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.dyn
+*.dSYM/
+
+# Intermediate CUDA/OpenACC files
+*.cubin
+*.ptx
+*.fatbin
+*.gpu
+*.sass
+*.mod.c
+*.cu.cpp
+*.ii
+*.i
+
+# Profiling artifacts
+gmon.out
+perf.data*
+perf.*.data*
+*.nsys-rep
+*.nsys-sqlite
+*.qdrep
+*.ncu-rep
+*.sqlite
+*.nvprof
+*.csv
+*.nvvp
+*.timeline*
+
