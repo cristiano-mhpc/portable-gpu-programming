@@ -41,11 +41,9 @@ int main(int argc, char *argv[]) {
     //# Define vectors for matrices
     const int nx=N, ny=N;
     const int niter=100;
-    const float factor =0.25;
+    const float factor =0.001;
     std::vector<float> matrix_u(nx*ny);
     std::vector<float> matrix_unew(nx*ny);
-    
-    
     
 
     // Initialize u
@@ -58,8 +56,9 @@ int main(int argc, char *argv[]) {
     }
 
     //# Define queue with default device for offloading computation
-    sycl::property_list q_prof{property::queue::enable_profiling{}, sycl::property::queue::in_order{}}; // we enable profiling and ensure that the kernels are executed in the order of submission
+    /* sycl::property_list q_prof{property::queue::enable_profiling{}, sycl::property::queue::in_order{}}; // we enable profiling and ensure that the kernels are executed in the order of submission */
     //queue q{property::queue::enable_profiling{}};
+    sycl::property_list q_prof{property::queue::enable_profiling{}}; 
     queue q{default_selector_v,q_prof}; // selects automatically the best device available
     //queue q{property::queue::enable_profiling{}};
     //queue q();
@@ -106,71 +105,76 @@ int main(int argc, char *argv[]) {
     
     auto start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-    for(int iter=0;iter<niter; iter++)
-    {       
-        {
-            //# TODO Create buffers for matrices
-            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
-            buffer<float, 1> bUNew(matrix_u.data(), range<1>(nx*ny)); 
+    double kernel_duration=0.0;  
+    {
+        //# TODO Create buffers for matrices
+        buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
+        buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny));
+
+        for(int iter=0;iter<niter; iter++)
+        {       
+            {
+                //# Submit command groups to execute on device            
+                auto e = q.submit([&](handler &h){
+                    //# TODO Create accessors to copy buffers to the device         
+                    accessor U(bU, h, sycl::read_only); 
+                    accessor UNEW(bUNew, h, sycl::write_only); 
+                    
+                    range<2> global_size(nx,ny);
+
+                     h.parallel_for(global_size, [=](id<2> item){
+                       const int i = item[0];
+                       const int j = item[1];
+
+                       int ind = i * ny + j;
+                       int ip = (i + 1) * ny + j;
+                       int im = (i - 1) * ny + j;
+                       int jp = i * ny + j + 1;
+                       int jm = i * ny + j - 1;
+                       if(i>0 && i<nx-1 && j>0 && j< ny-1){
+                        UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
+                                     U[jp] - 2.0 * U[ind] + U[jm]);
+                    }         
+                });
+             });
+             e.wait();
+             kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
+            }
             
-            //# Submit command groups to execute on device            
-            q.submit([&](handler &h){
-                //# TODO Create accessors to copy buffers to the device         
-                accessor U(bU, h, sycl::read_only); 
-                accessor UNEW(bUNew, h, sycl::write_only); 
-                
-                range<2> global_size(nx,ny);
+            {
 
-                 h.parallel_for(global_size, [=](id<2> item){
-                   const int i = item[0];
-                   const int j = item[1];
+                //# Submit command groups to execute on device
+                auto e = q.submit([&](handler &h){
+                    //# TODO Create accessors to copy buffers to the device       
+                    accessor U(bUNew, h, sycl::read_only);
+                    accessor UNEW(bU, h, sycl::write_only);
 
-                   int ind = i * ny + j;
-                   int ip = (i + 1) * ny + j;
-                   int im = (i - 1) * ny + j;
-                   int jp = i * ny + j + 1;
-                   int jm = i * ny + j - 1;
-                   if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
-                }         
-            });
-         });
-        }
-        
-        {
-            //# TODO Create buffers for matrices
-            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
-            buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny));
+                    range<2> global_size(nx,ny);
 
-            //# Submit command groups to execute on device
-            q.submit([&](handler &h){
-                //# TODO Create accessors to copy buffers to the device       
-                accessor U(bUNew, h, sycl::read_only);
-                accessor UNEW(bU, h, sycl::write_only);
+                     h.parallel_for(global_size, [=](id<2> item){
+                       const int i = item[0];
+                       const int j = item[1];
 
-                range<2> global_size(nx,ny);
-
-                 h.parallel_for(global_size, [=](id<2> item){
-                   const int i = item[0];
-                   const int j = item[1];
-
-                   int ind = i * ny + j;
-                   int ip = (i + 1) * ny + j;
-                   int im = (i - 1) * ny + j;
-                   int jp = i * ny + j + 1;
-                   int jm = i * ny + j - 1;
-                   if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
-                }         
-              });
-           });
-        }
-    }
-    
+                       int ind = i * ny + j;
+                       int ip = (i + 1) * ny + j;
+                       int im = (i - 1) * ny + j;
+                       int jp = i * ny + j + 1;
+                       int jm = i * ny + j - 1;
+                       if(i>0 && i<nx-1 && j>0 && j< ny-1){
+                        UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
+                                     U[jp] - 2.0 * U[ind] + U[jm]);
+                    }         
+                  });
+               });
+               e.wait();
+               kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
+            }// End of second kernel
+        } // End of niter loop
+    } // End of buffer scope, data is copied back to host automatically    
+      
     auto duration = std::chrono::high_resolution_clock::now().time_since_epoch().count() - start;
     std::cout << "Compute Duration      : " << duration / 1e+9 << " seconds\n";
+    std::cout << "Kernel Duration      : " << kernel_duration / 1e+9 << " seconds\n";
 
     //# Print Output
     if (PRINT_OUTPUT_MATRIX){
