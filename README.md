@@ -28,10 +28,17 @@ The slides are available [here](https://csc-training.github.io/portable-gpu-prog
 
 | Time         | Topic |
 | ----         | ----- |
-| 09:15-12:00  | SYCL I (with exercises)
+| 09:15-09:30  | Introduction to SYCL
+| 09:30-10:00  | Simple SYCL
+| 10:00-10:30  | SYCL Exercises 
+| 10:30-11:00  | Advanced SYCL
+| 11:00-11:30  | SYCL Exercises 
+| 11:30-12:00  | Other SYCL Features
 | 12:00-13:00  | Lunch break
-| 13:00-15:00  | SYCL II (with exercises)
-| 15:00-16:30  | SYCL III (with exercises)
+| 13:00-14:00  | SYCL Exercises
+| 14:00-15:00  | Memory Optimizations
+| 15:00-15:45  | SYCL and MPI 
+| 15:45-16:30  | Interoperability
 | 16:30-16:45  | Day 2 wrap-up
 
 ### Day 3, Thursday 23.10
