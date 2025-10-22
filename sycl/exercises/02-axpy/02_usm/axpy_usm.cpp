@@ -24,10 +24,12 @@ int main() {
   q.memcpy(dy, y.data(), N * sizeof(int));  // TODO filled
 
   // Submit the kernel: raw pointer access
-  q.parallel_for(range<1>(N), [=](id<1> i) {  // TODO filled
-    size_t idx = i[0];
-    dy[idx] = a * dx[idx] + dy[idx];
-  });
+  q.submit([&](handler& h) {
+
+    h.parallel_for(range<1>(N), [=](id<1> idx) {  // TODO filled
+        dy[idx] = a * dx[idx] + dy[idx];
+    });
+  }).wait();
 
   // Copy D2H and wait
   q.memcpy(y.data(), dy, N * sizeof(int)).wait();  // TODO filled

@@ -110,16 +110,18 @@ int main(int argc, char *argv[]) {
     {       
         {
             //# TODO Create buffers for matrices
-            
+            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
+            buffer<float, 1> bUNew(matrix_u.data(), range<1>(nx*ny)); 
             
             //# Submit command groups to execute on device            
             q.submit([&](handler &h){
                 //# TODO Create accessors to copy buffers to the device         
-                
+                accessor U(bU, h, sycl::read_only); 
+                accessor UNEW(bUNew, h, sycl::write_only); 
                 
                 range<2> global_size(nx,ny);
 
-                 h.parallel_for(TODO){
+                 h.parallel_for(global_size, [=](id<2> item){
                    const int i = item[0];
                    const int j = item[1];
 
@@ -138,16 +140,18 @@ int main(int argc, char *argv[]) {
         
         {
             //# TODO Create buffers for matrices
-            
-            
+            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
+            buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny));
+
             //# Submit command groups to execute on device
             q.submit([&](handler &h){
                 //# TODO Create accessors to copy buffers to the device       
-                
-                
+                accessor U(bUNew, h, sycl::read_only);
+                accessor UNEW(bU, h, sycl::write_only);
+
                 range<2> global_size(nx,ny);
 
-                 h.parallel_for(TODO ){
+                 h.parallel_for(global_size, [=](id<2> item){
                    const int i = item[0];
                    const int j = item[1];
 
