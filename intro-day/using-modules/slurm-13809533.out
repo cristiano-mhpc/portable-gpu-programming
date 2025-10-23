@@ -1,0 +1,18 @@
+RPL: on '251021_114854' from '/opt/rocm-6.0.3' in '/scratch/project_462001074/christica/Helsinki_GPU_course/portable-gpu-programming/intro-day/using-modules'
+RPL: profiling '"poisson"'
+RPL: input file ''
+RPL: output dir '/tmp/rpl_data_251021_114854_61785'
+RPL: result dir '/tmp/rpl_data_251021_114854_61785/input_results_251021_114854'
+ROCtracer (61807):
+RUN 0
+Using n = 1024, niter = 500
+u[512,512] = -120.808781
+Time spent: 1.284 s
+RUN 1
+Using n = 1024, niter = 500
+u[512,512] = -120.808781
+Time spent: 1.266 s
+RUN 2
+Using n = 1024, niter = 500
+u[512,512] = -120.808781
+Time spent: 1.265 s

@@ -1,0 +1,8 @@
+RPL: on '251021_120051' from '/opt/rocm-6.0.3' in '/scratch/project_462001074/christica/Helsinki_GPU_course/portable-gpu-programming/intro-day/using-modules'
+RPL: profiling '"poisson"'
+RPL: input file ''
+RPL: output dir '/tmp/rpl_data_251021_120051_93512'
+RPL: result dir '/tmp/rpl_data_251021_120051_93512/input_results_251021_120051'
+/opt/rocm-6.0.3/bin/rocprof: line 334: poisson: command not found
+srun: error: nid005031: task 0: Exited with exit code 127
+srun: Terminating StepId=13809827.0

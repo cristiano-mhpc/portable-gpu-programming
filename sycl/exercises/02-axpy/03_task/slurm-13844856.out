@@ -1,0 +1,3 @@
+[;35m[AdaptiveCpp Warning] [0mThis application uses SYCL buffers; the SYCL buffer-accessor model is well-known to introduce unnecessary overheads. Please consider migrating to the SYCL2020 USM model, in particular device USM (sycl::malloc_device) combined with in-order queues for more performance. See the AdaptiveCpp performance guide for more information: 
+https://github.com/AdaptiveCpp/AdaptiveCpp/blob/develop/doc/performance.md
+SUCCESS

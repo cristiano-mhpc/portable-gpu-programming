@@ -1,0 +1,33 @@
+
+List Devices
+
+	Checking for CPUs
+
+		 There are 1 CPUs
+
+			 Device: AdaptiveCpp OpenMP host device
+
+	Checking for GPUs
+
+		 There are 2 GPUs
+
+			 Device: AMD Instinct MI250X
+
+			 Device: AMD Instinct MI250X
+
+Checking properties of a queue CPU device
+
+				Platform Name: OpenMP (platform 0)
+				Platform Version: AdaptiveCpp 25.02.0+git.ce656fb5.20251006.branch.develop
+				Device Name: AdaptiveCpp OpenMP host device
+				Max Work Group: 1024
+				Max Compute Units: 2
+
+Checking properties of a GPU device
+
+				Platform Name: HIP (platform 0)
+				Platform Version: AdaptiveCpp 25.02.0+git.ce656fb5.20251006.branch.develop
+				Device Name: AMD Instinct MI250X
+				Max Work Group: 1024
+				Max Compute Units: 110
+
