@@ -1,5 +1,4 @@
 #include <iostream>
-#include<Kokkos_Core.hpp>
 
 template <typename T1, typename T2>
 void axpy(T1 x, T1 y, T2 a, size_t N) 
@@ -8,16 +7,6 @@ void axpy(T1 x, T1 y, T2 a, size_t N)
   {
     y[i] += a * x[i]; 
   }
-
-}
-
-template <typename T1, typename T2>
-void axpy_kokkos(T1 x, T1 y, T2 a, size_t N) 
-{
-    Kokkos::parallel_for("axpy_kokkos", N,
-            KOKKOS_LAMBDA(const size_t i) {
-    y[i] += a * x[i];
-  });
 }
 
 template <typename T>
@@ -32,8 +21,7 @@ void init(T x, T y, size_t N)
 
 int main(int argc, char** argv)
 {
-  Kokkos::initialize(argc, argv);
-  
+
   using fp_type = double;
 
   const fp_type a = 0.5;
@@ -47,15 +35,10 @@ int main(int argc, char** argv)
             << "x: " << x[0] << "," << x[N-1] << std::endl
             << "y: " << y[0] << "," << y[N-1] << std::endl;
 
-  /* axpy(x, y, a, N); */
-  axpy_kokkos(x, y, a, N);
+  axpy(x, y, a, N);
 
-  Kokkos::fence(); // synchronize. We wait for axpy_kokkos to finish 
-  
   // Check results
   std::cout << "First and last element (both should be zero):" << std::endl 
             << y[0] << "," << y[N-1] << std::endl;  
-
-  Kokkos::finalize(); 
 
 }

@@ -9,9 +9,5 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --gpus-per-node=1
 
-# run with omp backend 
-#srun ./build-omp/axpy --kokkos-print-configuration 
-
-# Run with hip backend 
-export HSA_XNACK=1 # Enable XNACK for AMD GPUs
-srun ./build-hip/axpy --kokkos-print-configuration 
+#srun ./build-omp/hello --kokkos-print-configuration 
+srun ./build-hip/hello --kokkos-print-configuration 
