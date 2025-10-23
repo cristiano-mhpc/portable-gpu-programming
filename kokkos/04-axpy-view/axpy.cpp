@@ -31,23 +31,25 @@ int main(int argc, char** argv)
 
   /* fp_type *x = (fp_type *) malloc(N * sizeof(fp_type)); */
   /* fp_type *y = (fp_type *) malloc(N * sizeof(fp_type)); */
+  {
+      Kokkos::View<fp_type [N], Kokkos::SharedSpace> x("x");
+      Kokkos::View<fp_type [N], Kokkos::SharedSpace> y("y");
+  
+      init(x, y, N);
+      Kokkos::fence();
 
-  Kokkos::View<fp_type [N], Kokkos::SharedSpace> x("x");
-  Kokkos::View<fp_type [N], Kokkos::SharedSpace> y("y");
+      std::cout << "First and last elements before axpy: " << std::endl 
+                << "x: " << x[0] << "," << x[N-1] << std::endl
+                << "y: " << y[0] << "," << y[N-1] << std::endl;  
 
-  init(x, y, N);
-  Kokkos::fence();
+      axpy(x, y, a, N);
+      Kokkos::fence();
 
-  std::cout << "First and last elements before axpy: " << std::endl 
-            << "x: " << x[0] << "," << x[N-1] << std::endl
-            << "y: " << y[0] << "," << y[N-1] << std::endl;  
+      // Check results
+      std::cout << "First and last element (both should be zero):" << std::endl 
+                << y[0] << "," << y[N-1] << std::endl;  
 
-  axpy(x, y, a, N);
-  Kokkos::fence();
-
-  // Check results
-  std::cout << "First and last element (both should be zero):" << std::endl 
-            << y[0] << "," << y[N-1] << std::endl;  
+  }
 
   Kokkos::finalize();
 }
