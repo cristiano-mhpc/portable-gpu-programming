@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     //# Define vectors for matrices
     const int nx=N, ny=N;
     const int niter=100;
-    const float factor =0.25;
+    const float factor =0.0001;
     std::vector<float> matrix_u(nx*ny);
     std::vector<float> matrix_unew(nx*ny);
     
@@ -129,8 +129,8 @@ int main(int argc, char *argv[]) {
                    int jp = i * ny + j + 1;
                    int jm = i * ny + j - 1;
                    if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
+                    UNEW[ind] = factor * (U[ip] + U[im] +
+                                          U[jp] + U[jm]);
                 }         
             });
          });
@@ -157,8 +157,8 @@ int main(int argc, char *argv[]) {
                    int jp = i * ny + j + 1;
                    int jm = i * ny + j - 1;
                    if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
+                    UNEW[ind] = factor * (U[ip] + U[im] +
+                                          U[jp] + U[jm]);
                 }         
               });
            });

@@ -620,8 +620,8 @@
 
    Compiling with diagnostics:
 
-       nvc -mp=gpu -gpu=cc80 -Minfo=mp axpy.c -o axpy.x
-       nvfortran -mp=gpu -gpu=cc80 -Minfo=mp helper_functions.F90 axpy.F90 -o axpy.x
+       nvc -O3 -mp=gpu -gpu=cc80 -Minfo=mp axpy.c -o axpy.x
+       nvfortran -O3 -mp=gpu -gpu=cc80 -Minfo=mp helper_functions.F90 axpy.F90 -o axpy.x
 
    Output for C:
 
@@ -637,9 +637,3 @@
             31, !$omp target teams distribute parallel do
                 31, Generating "nvkernel_MAIN__F1L31_2" GPU kernel
             31, Generating implicit map(tofrom:y(:),x(:))
-
-
-### Bonus exercises: loop construct
-
-1. Cray compiler requires splitting the pragma to two lines.
-   AMD Clang and NVIDIA HPC work with one-liner.
