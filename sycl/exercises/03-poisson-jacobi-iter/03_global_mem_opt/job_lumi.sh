@@ -9,4 +9,5 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --gpus-per-node=1
 
-srun ./a.out -n 16000 
+# srun ./a.out -n 16000 
+rocprof --stats --hip-trace --hsa-trace ./a.out -n 16000

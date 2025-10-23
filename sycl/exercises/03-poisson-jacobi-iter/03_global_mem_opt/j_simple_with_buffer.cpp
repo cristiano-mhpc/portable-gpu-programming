@@ -1,3 +1,4 @@
+// acpp -O3 --acpp-targets="omp.accelerated;hip:gfx90a" j_simple_with_buffer.cpp
 #include <sycl/sycl.hpp>
 #include <ctime>
 #include <chrono>
