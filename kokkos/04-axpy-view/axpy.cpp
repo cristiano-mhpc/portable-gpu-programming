@@ -29,16 +29,20 @@ int main(int argc, char** argv)
   const fp_type a = 0.5;
   constexpr size_t N = 100;
 
-  fp_type *x = (fp_type *) malloc(N * sizeof(fp_type));
-  fp_type *y = (fp_type *) malloc(N * sizeof(fp_type));
+  /* fp_type *x = (fp_type *) malloc(N * sizeof(fp_type)); */
+  /* fp_type *y = (fp_type *) malloc(N * sizeof(fp_type)); */
+
+  Kokkos::View<fp_type [N], Kokkos::SharedSpace> x("x");
+  Kokkos::View<fp_type [N], Kokkos::SharedSpace> y("y");
 
   init(x, y, N);
+  Kokkos::fence();
+
   std::cout << "First and last elements before axpy: " << std::endl 
             << "x: " << x[0] << "," << x[N-1] << std::endl
             << "y: " << y[0] << "," << y[N-1] << std::endl;  
 
   axpy(x, y, a, N);
-
   Kokkos::fence();
 
   // Check results

@@ -1,28 +1,26 @@
-#include <Kokkos_Core.hpp>
 #include <iostream>
 
 template <typename T1, typename T2>
 void axpy(T1 x, T1 y, T2 a, size_t N) 
 {
-  Kokkos::parallel_for(N,
-     KOKKOS_LAMBDA (const size_t i) {
-          y[i] += a * x[i];
-     });
+  for (size_t i = 0; i < N; i++) 
+  {
+    y[i] += a * x[i]; 
+  }
 }
 
 template <typename T>
 void init(T x, T y, size_t N) 
 {
-  Kokkos::parallel_for(N,
-    KOKKOS_LAMBDA (const size_t i) {
-      x[i] = (i + 1) * 2.4;
-      y[i] = (i + 1) * -1.2;
-    });
+  for (size_t i = 0; i < N; i++) 
+  {
+    x[i] = (i + 1) * 2.4;
+    y[i] = (i + 1) * -1.2;
+  }
 }
 
 int main(int argc, char** argv)
 {
-  Kokkos::initialize(argc, argv);
 
   using fp_type = double;
 
@@ -33,17 +31,14 @@ int main(int argc, char** argv)
   fp_type *y = (fp_type *) malloc(N * sizeof(fp_type));
 
   init(x, y, N);
-  std::cout << "First and last elements before axpy: " << std::endl 
+  std::cout << "First and last elements before axpy: " << std::endl
             << "x: " << x[0] << "," << x[N-1] << std::endl
-            << "y: " << y[0] << "," << y[N-1] << std::endl;  
+            << "y: " << y[0] << "," << y[N-1] << std::endl;
 
   axpy(x, y, a, N);
-
-  Kokkos::fence();
 
   // Check results
   std::cout << "First and last element (both should be zero):" << std::endl 
             << y[0] << "," << y[N-1] << std::endl;  
 
-  Kokkos::finalize();
 }
