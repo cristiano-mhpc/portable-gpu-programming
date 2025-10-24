@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --node=2
+#SBATCH --nodes=2
 #SBATCH --job-name=slurm-test
 #SBATCH --account=project_2015315
 #SBATCH --partition=gpusmall
@@ -8,10 +8,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:a100_1g.5gb:2
+#SBATCH --gres=gpu:a100_1g.5gb:1
 
 #run with openmp backend
 # srun ./build-omp/subviews --kokkos-print-configuration
 
 # run with cuda backend 
-srun ./build-cuda/subviews --kokkos-print-configuration 
+srun ./build-cuda/hello --kokkos-print-configuration 
