@@ -42,150 +42,150 @@ int main(int argc, char *argv[]) {
     const int nx=N, ny=N;
     const int niter=100;
     const float factor =0.001;
-    std::vector<float> matrix_u(nx*ny);
-    std::vector<float> matrix_unew(nx*ny);
-    
-
-    // Initialize u
-    for (int i = 0; i < nx; i++) {
-        for (int j = 0; j < ny; j++) {
-            int ind = i * ny + j;
-            matrix_u[ind] = ((i - nx / 2) * (i - nx / 2)) / nx +
-                            ((j - ny / 2) * (j - ny / 2)) / ny;
-        }
-    }
-
-    //# Define queue with default device for offloading computation
-    /* sycl::property_list q_prof{property::queue::enable_profiling{}, sycl::property::queue::in_order{}}; // we enable profiling and ensure that the kernels are executed in the order of submission */
-    //queue q{property::queue::enable_profiling{}};
-    sycl::property_list q_prof{property::queue::enable_profiling{}}; 
-    queue q{default_selector_v,q_prof}; // selects automatically the best device available
-    //queue q{property::queue::enable_profiling{}};
-    //queue q();
-    //queue q{property::queue::enable_profiling{}, property::queue::in_order()};
-
-    std::cout << "Offload Device        : " << q.get_device().get_info<info::device::name>() << "\n";
-    std::cout << "max_work_group_size   : " << q.get_device().get_info<info::device::max_work_group_size>() << "\n";
-    std::cout << "Configuration         : MATRIX_SIZE= " << nx << "x" << ny << "\n";
-    std::cout << " [0][0] = " << matrix_u[0] << "\n";
-    std::cout << "Warm up the device  \n";
-
-    {
-        //# Create buffers for matrices
-        buffer<float, 1> u(matrix_u.data(), range<1>(nx*ny));
-        buffer<float, 1> unew(matrix_unew.data(), range<1>(nx*ny));
-
-        //# Submit command groups to execute on device
-        q.submit([&](handler &h){
-      
-            accessor U(u, h, sycl::read_only);
-            accessor UNEW(unew, h, sycl::write_only);
-
-            range<2> global_size(nx,ny);
-
-            h.parallel_for(global_size, [=](id<2> item){
-                const int i = item[0];
-                const int j = item[1];
-
-                int ind = i * ny + j;
-                int ip = (i + 1) * ny + j;
-                int im = (i - 1) * ny + j;
-                int jp = i * ny + j + 1;
-                int jm = i * ny + j - 1;
-                if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
-                }         
-            });
-        });
-    }
-    q.wait(); //redundant becuase buffers destruction when going out of scope will ensure the synchronization with the host
-    
-    std::cout << "Warm up done!  \n";
-    
-    auto start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-
-    double kernel_duration=0.0;  
-    for(int iter=0;iter<niter; iter++)
-    {       
-        {
-            //# TODO Create buffers for matrices
-            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
-            buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny)); 
-            //# Submit command groups to execute on device            
-            auto e = q.submit([&](handler &h){
-                //# TODO Create accessors to copy buffers to the device         
-                accessor U(bU, h, sycl::read_only); 
-                accessor UNEW(bUNew, h, sycl::write_only); 
-                
-                range<2> global_size(nx,ny);
-
-                 h.parallel_for(global_size, [=](id<2> item){
-                   const int i = item[0];
-                   const int j = item[1];
-
-                   int ind = i * ny + j;
-                   int ip = (i + 1) * ny + j;
-                   int im = (i - 1) * ny + j;
-                   int jp = i * ny + j + 1;
-                   int jm = i * ny + j - 1;
-                   if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
-                }         
-            });
-         });
-         e.wait();
-         kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
-        }
+        std::vector<float> matrix_u(nx*ny);
+        std::vector<float> matrix_unew(nx*ny);
         
+
+        // Initialize u
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
+                int ind = i * ny + j;
+                matrix_u[ind] = ((i - nx / 2) * (i - nx / 2)) / nx +
+                                ((j - ny / 2) * (j - ny / 2)) / ny;
+            }
+        }
+
+        //# Define queue with default device for offloading computation
+        /* sycl::property_list q_prof{property::queue::enable_profiling{}, sycl::property::queue::in_order{}}; // we enable profiling and ensure that the kernels are executed in the order of submission */
+        //queue q{property::queue::enable_profiling{}};
+        sycl::property_list q_prof{property::queue::enable_profiling{}}; 
+        queue q{default_selector_v,q_prof}; // selects automatically the best device available
+        //queue q{property::queue::enable_profiling{}};
+        //queue q();
+        //queue q{property::queue::enable_profiling{}, property::queue::in_order()};
+
+        std::cout << "Offload Device        : " << q.get_device().get_info<info::device::name>() << "\n";
+        std::cout << "max_work_group_size   : " << q.get_device().get_info<info::device::max_work_group_size>() << "\n";
+        std::cout << "Configuration         : MATRIX_SIZE= " << nx << "x" << ny << "\n";
+        std::cout << " [0][0] = " << matrix_u[0] << "\n";
+        std::cout << "Warm up the device  \n";
+
         {
-            //# TODO Create buffers for matrices
-            buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
-            buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny));
+            //# Create buffers for matrices
+            buffer<float, 1> u(matrix_u.data(), range<1>(nx*ny));
+            buffer<float, 1> unew(matrix_unew.data(), range<1>(nx*ny));
 
             //# Submit command groups to execute on device
-            auto e = q.submit([&](handler &h){
-                //# TODO Create accessors to copy buffers to the device       
-                accessor U(bUNew, h, sycl::read_only);
-                accessor UNEW(bU, h, sycl::write_only);
+            q.submit([&](handler &h){
+          
+                accessor U(u, h, sycl::read_only);
+                accessor UNEW(unew, h, sycl::write_only);
 
                 range<2> global_size(nx,ny);
 
-                 h.parallel_for(global_size, [=](id<2> item){
-                   const int i = item[0];
-                   const int j = item[1];
+                h.parallel_for(global_size, [=](id<2> item){
+                    const int i = item[0];
+                    const int j = item[1];
 
-                   int ind = i * ny + j;
-                   int ip = (i + 1) * ny + j;
-                   int im = (i - 1) * ny + j;
-                   int jp = i * ny + j + 1;
-                   int jm = i * ny + j - 1;
-                   if(i>0 && i<nx-1 && j>0 && j< ny-1){
-                    UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
-                                 U[jp] - 2.0 * U[ind] + U[jm]);
-                }         
-              });
-           });
-           e.wait();
-           kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
+                    int ind = i * ny + j;
+                    int ip = (i + 1) * ny + j;
+                    int im = (i - 1) * ny + j;
+                    int jp = i * ny + j + 1;
+                    int jm = i * ny + j - 1;
+                    if(i>0 && i<nx-1 && j>0 && j< ny-1){
+                        UNEW[ind] = factor * (U[ip] - 2.0 * U[ind] + U[im] +
+                                     U[jp] - 2.0 * U[ind] + U[jm]);
+                    }         
+                });
+            });
         }
-    }
-    
-    auto duration = std::chrono::high_resolution_clock::now().time_since_epoch().count() - start;
-    std::cout << "Compute Duration      : " << duration / 1e+9 << " seconds\n";
-    std::cout << "Kernel Duration      : " << kernel_duration / 1e+9 << " seconds\n";
+        q.wait(); //redundant becuase buffers destruction when going out of scope will ensure the synchronization with the host
+        
+        std::cout << "Warm up done!  \n";
+        
+        auto start = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-    //# Print Output
-    if (PRINT_OUTPUT_MATRIX){
-        /*for (int i=0; i<N; i++){
-            for (int j=0; j<N; j++){
-                std::cout << matrix_c[i*N+j] << " ";
+        double kernel_duration=0.0;  
+        for(int iter=0;iter<niter; iter++)
+        {       
+            {
+                //# TODO Create buffers for matrices
+                buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
+                buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny)); 
+                //# Submit command groups to execute on device            
+                auto e = q.submit([&](handler &h){
+                    //# TODO Create accessors to copy buffers to the device         
+                    accessor U(bU, h, sycl::read_only); 
+                    accessor UNEW(bUNew, h, sycl::write_only); 
+                    
+                    range<2> global_size(nx,ny);
+
+                     h.parallel_for(global_size, [=](id<2> item){
+                       const int i = item[0];
+                       const int j = item[1];
+
+                       int ind = i * ny + j;
+                       int ip = (i + 1) * ny + j;
+                       int im = (i - 1) * ny + j;
+                       int jp = i * ny + j + 1;
+                       int jm = i * ny + j - 1;
+                       if(i>0 && i<nx-1 && j>0 && j< ny-1){
+                        UNEW[ind] = factor * (U[ip] + U[im] +
+                                              U[jp] + U[jm]);
+                    }         
+                });
+             });
+             e.wait();
+             kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
             }
-            std::cout << "\n";
-        }*/
-    } else {
-        std::cout << " [0][0] = " << matrix_u[0] << "\n";
-    }
+            
+            {
+                //# TODO Create buffers for matrices
+                buffer<float, 1> bU(matrix_u.data(), range<1>(nx*ny)); 
+                buffer<float, 1> bUNew(matrix_unew.data(), range<1>(nx*ny));
+
+                //# Submit command groups to execute on device
+                auto e = q.submit([&](handler &h){
+                    //# TODO Create accessors to copy buffers to the device       
+                    accessor U(bUNew, h, sycl::read_only);
+                    accessor UNEW(bU, h, sycl::write_only);
+
+                    range<2> global_size(nx,ny);
+
+                     h.parallel_for(global_size, [=](id<2> item){
+                       const int i = item[0];
+                       const int j = item[1];
+
+                       int ind = i * ny + j;
+                       int ip = (i + 1) * ny + j;
+                       int im = (i - 1) * ny + j;
+                       int jp = i * ny + j + 1;
+                       int jm = i * ny + j - 1;
+                       if(i>0 && i<nx-1 && j>0 && j< ny-1){
+                        UNEW[ind] = factor * (U[ip] + U[im] +
+                                              U[jp] + U[jm]);
+                    }         
+                  });
+               });
+               e.wait();
+               kernel_duration += (e.get_profiling_info<info::event_profiling::command_end>() - e.get_profiling_info<info::event_profiling::command_start>());
+            }
+        }
+        
+        auto duration = std::chrono::high_resolution_clock::now().time_since_epoch().count() - start;
+        std::cout << "Compute Duration      : " << duration / 1e+9 << " seconds\n";
+        std::cout << "Kernel Duration      : " << kernel_duration / 1e+9 << " seconds\n";
+
+        //# Print Output
+        if (PRINT_OUTPUT_MATRIX){
+            /*for (int i=0; i<N; i++){
+                for (int j=0; j<N; j++){
+                    std::cout << matrix_c[i*N+j] << " ";
+                }
+                std::cout << "\n";
+            }*/
+        } else {
+            std::cout << " [0][0] = " << matrix_u[0] << "\n";
+        }
 
 }

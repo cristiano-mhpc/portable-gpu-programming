@@ -178,7 +178,7 @@ auto q = queue { custom_selector {} };
 </div>
 
 <div class="column">
- - function object (functors)
+ - function object (functors) <span style="color:red"> ! </span>
  <small>
 ```cpp 
 template <typename T>
@@ -283,7 +283,7 @@ int main() {
 
     queue q;
     {
-        buffer x_buf(hx); buffer y_buf(hy);
+        buffer x_buf(hx.data); buffer y_buf(hy.data);
 
         q.submit([&](handler &cgh) {
             auto x = accessor{x_buf, cgh, read};
@@ -349,7 +349,7 @@ int main() {
 
     queue q;
     {
-        buffer x_buf(hx); buffer y_buf(hy);
+        buffer x_buf(hx.data); buffer y_buf(hy.data);
 
         q.submit([&](handler &cgh) {
             auto x = accessor{x_buf, cgh, read};
