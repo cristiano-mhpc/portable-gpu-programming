@@ -57,6 +57,7 @@ void run(const int n, const int niter)
 
         // Write data
         // TODO: Fix me
+#       pragma omp target update from(u[0:nx*ny])
         if (it % 1000 == 0) {
             sprintf(filename, "u%06d.bin", it);
             write_array(filename, u, n2);

@@ -1,0 +1,3 @@
+ml LUMI/24.03
+ml partition/G
+ml rocm/6.0.3

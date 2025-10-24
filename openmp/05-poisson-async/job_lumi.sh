@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH --job-name=slurm-test
+#SBATCH --account=project_462001074
+#SBATCH --partition=small-g
+#SBATCH --reservation=portgp-2025-fri # This changes every day to -wed, -thu and -fri, valid 09:00 to 17:00
+#SBATCH --time=00:05:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=7
+#SBATCH --gpus-per-node=1
+
+
+rm results.*
+
+export CRAY_ACC_FORCE_EARLY_INIT=1
+export CRAY_ACC_DEBUG=2 # useful information for debugging on AMD
+srun rocprof --hip-trace --roctx-trace ./poisson.x 4096 5000 1
+ 
+# export OMP_DISPLAY_AFFINITY=true #run on cpu
+# srun ./poisson.x 2048 1000 

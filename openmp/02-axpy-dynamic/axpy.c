@@ -25,7 +25,7 @@ void run(const int n)
     print_array("y", y, n);
 
     // Calculate axpy
-    #pragma omp target teams distribute parallel for
+    #pragma omp target teams distribute parallel for map(to: x[0:n], alpha) map(tofrom: y[0:n]) 
     for (int i = 0; i < n; i++) {
         y[i] += alpha * x[i];
     }

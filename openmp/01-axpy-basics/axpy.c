@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "helper_functions.h"
+#include <omp.h> 
 
 // Array size
 #ifndef N
@@ -28,10 +29,13 @@ int main(void)
 
     // Calculate axpy
     // TODO: Use OpenMP directives for GPU execution
+    double t_kernel_start = omp_get_wtime();
+#   pragma omp target teams distribute parallel for map(to: x[0:N], alpha) map(tofrom: y[0:N])    
     for (int i = 0; i < N; i++) {
         y[i] += alpha * x[i];
     }
-
+    double t_kernel = omp_get_wtime() - t_kernel_start;
+    printf("  Kernel         : %.6f\n", t_kernel);
     // Print output values
     printf("Output:\n");
     print_array("y", y, N);

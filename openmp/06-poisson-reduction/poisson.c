@@ -61,6 +61,7 @@ void run(const int n, const int niter, const double normmax)
 
         // Check converge
         // TODO: Fix me
+#       pragma omp target update from(u[0:nx*ny], unew[0:nx*ny]) depend(in: u[0:nx*ny], unew[0:nx*ny]) 
         if (it % 100 == 0) {
             double norm2 = 0.0;
             for (int i = 1; i < ny - 1; i++) {

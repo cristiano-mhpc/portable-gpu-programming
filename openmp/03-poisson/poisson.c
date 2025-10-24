@@ -33,30 +33,34 @@ void run(const int n, const int niter)
     double t0 = omp_get_wtime();
 
     // TODO 2: Transfer the needed arrays to GPU before the main loop
+#   pragma omp target data map(to: h2,f[0:n2]) map(alloc: u[0:n2], unew[0:n2])
+    {
+        for (int it = 1; it < niter + 1; it++) {
 
-    for (int it = 1; it < niter + 1; it++) {
-
-        // Stencil update
-        // TODO 1: Offload the stencil update
-        for (int i = 1; i < ny - 1; i++) {
-            for (int j = 1; j < nx - 1; j++) {
-                int ind = i * nx + j;
-                int ip = (i + 1) * nx + j;
-                int im = (i - 1) * nx + j;
-                int jp = i * nx + j + 1;
-                int jm = i * nx + j - 1;
-                unew[ind] = 0.25 * (u[ip] + u[im] + u[jp] + u[jm] - h2 * f[ind]);
+            // Stencil update
+            // TODO 1: Offload the stencil update
+#           pragma omp target teams distribute parallel for collapse(2)  
+            for (int i = 1; i < ny - 1; i++) {
+                for (int j = 1; j < nx - 1; j++) {
+                    int ind = i * nx + j;
+                    int ip = (i + 1) * nx + j;
+                    int im = (i - 1) * nx + j;
+                    int jp = i * nx + j + 1;
+                    int jm = i * nx + j - 1;
+                    unew[ind] = 0.25 * (u[ip] + u[im] + u[jp] + u[jm] - h2 * f[ind]);
+                }
             }
+
+            // Swap the arrays
+            double *tmp = u;
+            u = unew;
+            unew = tmp;
         }
-
-        // Swap the arrays
-        double *tmp = u;
-        u = unew;
-        unew = tmp;
-    }
-
+    
     // TODO 2: Transfer the needed arrays back to CPU after the main loop
-
+#   pragma omp target update from(u[0:n2])  
+    } // end target data region  
+      
     double t1 = omp_get_wtime();
 
     // Write final result
